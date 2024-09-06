@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -20,17 +21,16 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "user_id")
-    private String userId;
 
-    @Column(name = "session_token")
+
+    @Column(name = "session_token",nullable = false)
     private String sessionToken;
 
-    @Column(name = "expires")
-    private Timestamp expires;
+    @Column(name = "expires",nullable = false)
+    private LocalDateTime expires;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="user_id")
+    @ManyToOne(cascade = CascadeType.ALL ,fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id",nullable = false)
     private User user;
 
 }

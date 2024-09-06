@@ -24,7 +24,7 @@ public class User {
     @Column(name="name")
     private String name;
 
-    @Column(name="email" )
+    @Column(name="email", nullable = false )
     private String email;
 
     @Column(name="password")
@@ -33,7 +33,8 @@ public class User {
     @Column(name="email_verified")
     private Timestamp emailVerified;
 
-    @Column(name="role")
+    @Enumerated(EnumType.STRING )
+    @Column(name="role" ,nullable = false)
     private Role role;
 
     @Column(name="image")

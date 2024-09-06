@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.sql.Timestamp;
 
@@ -18,18 +19,16 @@ public class VerificationToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
-    @Column(name = "identifier")
+    @Column(name = "identifier",nullable = false)
     private String identifier;
 
-    @Column(name = "token")
+    @Column(name = "token",nullable = false)
     private String token;
 
-    @Column(name = "expires")
+    @Column(name = "expires",nullable = false)
     private Timestamp expires;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     private User user;
 }
