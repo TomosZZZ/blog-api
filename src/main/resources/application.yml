@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: Blog
+  datasource:
+    username: root
+    password: null
+    url: jdbc:mysql://localhost:3306/blog
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: update
