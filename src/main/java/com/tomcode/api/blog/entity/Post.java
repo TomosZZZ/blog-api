@@ -16,4 +16,7 @@ public class Post {
 
     @Column(name = "content")
     private String content;
+
+    @Column(name="thumbnail")
+    private String thumbnail;
 }
