@@ -1,6 +1,7 @@
 package com.tomcode.api.blog.service;
 
 import com.tomcode.api.blog.entity.Post;
+import com.tomcode.api.blog.exception.DatabaseOperationException;
 import com.tomcode.api.blog.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void createPost(Post post) {
-         postRepository.save(post);
+        try{
+            postRepository.save(post);
+        }catch(Exception e){
+            throw new DatabaseOperationException(e.getMessage());
+        }
+
     }
 
     @Override
