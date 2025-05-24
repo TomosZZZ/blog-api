@@ -8,11 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/api/post")
+@RequestMapping(value = "/api/posts")
 public class PostController {
 
     private JWTParser jwtParser;
@@ -21,6 +23,15 @@ public class PostController {
     public PostController(PostService postService, JWTParser jwtParser) {
         this.postService = postService;
         this.jwtParser = jwtParser;
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<List<Post>> getAllPosts() {
+        List<Post> posts =  postService.getPosts();
+        if(posts.isEmpty()) {
+            return new ResponseEntity<>(posts, HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     @PostMapping("/create")
