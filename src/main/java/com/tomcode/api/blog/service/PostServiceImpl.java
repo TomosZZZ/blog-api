@@ -1,11 +1,13 @@
 package com.tomcode.api.blog.service;
 
+import com.tomcode.api.blog.dto.PostDTO;
 import com.tomcode.api.blog.entity.Post;
 import com.tomcode.api.blog.exception.DatabaseOperationException;
 import com.tomcode.api.blog.repository.PostRepository;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDateTime;
 import java.util.List;
+
 @Service
 public class PostServiceImpl implements PostService {
 
@@ -15,8 +17,14 @@ public class PostServiceImpl implements PostService {
         this.postRepository = postRepository;
     }
 
-    @Override
-    public void createPost(Post post) {
+    public void createPost(PostDTO postDTO) {
+        Post post = new Post();
+        post.setTitle(postDTO.getTitle());
+        post.setContent(postDTO.getContent());
+        post.setThumbnail(postDTO.getThumbnail());
+        post.setCreatedAt(LocalDateTime.now());
+        post.setUpdatedAt(LocalDateTime.now());
+
         try{
             postRepository.save(post);
         }catch(Exception e){

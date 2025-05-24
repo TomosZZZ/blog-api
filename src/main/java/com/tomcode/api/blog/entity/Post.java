@@ -2,6 +2,7 @@ package com.tomcode.api.blog.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -20,4 +21,10 @@ public class Post {
     @Lob
     @Column(name="thumbnail", columnDefinition = "MEDIUMTEXT")
     private String thumbnail;
+
+    @Column(name="created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name="updated_at")
+    private LocalDateTime updatedAt;
 }

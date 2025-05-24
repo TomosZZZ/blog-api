@@ -1,14 +1,13 @@
 package com.tomcode.api.blog.controllers;
 
+import com.tomcode.api.blog.dto.PostDTO;
 import com.tomcode.api.blog.entity.Post;
 import com.tomcode.api.blog.security.JWTParser;
 import com.tomcode.api.blog.service.PostService;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +34,7 @@ public class PostController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Map<String,String>> createPost(@RequestBody Post post, @RequestHeader(value="Authorization") String authHeader) {
+    public ResponseEntity<Map<String,String>> createPost(@RequestBody PostDTO postDTO, @RequestHeader(value="Authorization") String authHeader) {
         Map<String, String> response = new HashMap<>();
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -50,7 +49,7 @@ public class PostController {
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
 
-        postService.createPost(post);
+        postService.createPost(postDTO);
 
         response.put("message", "Post created successfully");
         return new ResponseEntity<>(response, HttpStatus.OK);
