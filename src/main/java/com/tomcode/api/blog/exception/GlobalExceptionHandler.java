@@ -1,5 +1,7 @@
 package com.tomcode.api.blog.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,13 +11,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(DatabaseOperationException.class)
     public ResponseEntity<String> databaseOperationException(DatabaseOperationException e) {
-        return new ResponseEntity<>("Database error occured: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        log.error("DatabaseOperationException:", e);
+        return new ResponseEntity<>("Wystąpił błąd operacji na bazie danych.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception ex) {
-        return new ResponseEntity<>("An error occured: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        log.error("Nieoczekiwany błąd:", ex);
+        return new ResponseEntity<>("Wystąpił błąd serwera. Spróbuj ponownie później.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
