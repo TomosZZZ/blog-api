@@ -7,6 +7,7 @@ import com.tomcode.api.blog.repository.PostRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -31,6 +32,11 @@ public class PostServiceImpl implements PostService {
             throw new DatabaseOperationException(e.getMessage());
         }
 
+    }
+
+    public Post getPostById(String id) {
+        Optional<Post> post = postRepository.findById(id);
+        return post.orElse(null);
     }
 
     @Override

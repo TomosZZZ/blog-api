@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 @RestController
 @RequestMapping(value = "/api/posts")
 public class PostController {
@@ -31,6 +32,15 @@ public class PostController {
             return new ResponseEntity<>(posts, HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(posts, HttpStatus.OK);
+    }
+
+    @GetMapping("getById/{id}")
+    public ResponseEntity<Post> getPostById(@PathVariable String id) {
+        Post post = postService.getPostById(id);
+        if(post == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
     @PostMapping("/create")
