@@ -13,15 +13,24 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(DatabaseOperationException.class)
-    public ResponseEntity<String> databaseOperationException(DatabaseOperationException e) {
-        log.error("DatabaseOperationException:", e);
-        return new ResponseEntity<>("Wystąpił błąd operacji na bazie danych.", HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(PostNotFoundException.class)
+    public ResponseEntity<String> handlePostNotFoundException(PostNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<String> handleAccessDeniedException(ForbiddenException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidAuthorizationHeaderException.class)
+    public ResponseEntity<String> handleInvalidAuthorizationHeaderException(InvalidAuthorizationHeaderException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception ex) {
         log.error("Nieoczekiwany błąd:", ex);
-        return new ResponseEntity<>("Wystąpił błąd serwera. Spróbuj ponownie później.", HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong. Try again later.");
     }
 }

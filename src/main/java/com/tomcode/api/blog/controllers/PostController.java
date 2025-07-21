@@ -2,6 +2,9 @@ package com.tomcode.api.blog.controllers;
 
 import com.tomcode.api.blog.dto.PostDTO;
 import com.tomcode.api.blog.entity.Post;
+import com.tomcode.api.blog.exception.ForbiddenException;
+import com.tomcode.api.blog.exception.InvalidAuthorizationHeaderException;
+import com.tomcode.api.blog.exception.PostNotFoundException;
 import com.tomcode.api.blog.security.JWTParser;
 import com.tomcode.api.blog.service.PostService;
 import org.springframework.http.HttpStatus;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @RestController
@@ -28,41 +32,30 @@ public class PostController {
     @GetMapping("/get")
     public ResponseEntity<List<Post>> getAllPosts() {
         List<Post> posts =  postService.getPosts();
-        if(posts.isEmpty()) {
-            return new ResponseEntity<>(posts, HttpStatus.NO_CONTENT);
-        }
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     @GetMapping("get/{id}")
     public ResponseEntity<Post> getPostById(@PathVariable String id) {
-        Post post = postService.getPostById(id);
-        if(post == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Optional<Post> post = postService.getPostById(id);
+        if(post.isEmpty()) {
+            throw new PostNotFoundException(id);
         }
-        return new ResponseEntity<>(post, HttpStatus.OK);
+        return ResponseEntity.ok(post.get());
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Map<String,String>> createPost(@RequestBody PostDTO postDTO, @RequestHeader(value="Authorization") String authHeader) {
-        Map<String, String> response = new HashMap<>();
-
+    public ResponseEntity createPost(@RequestBody PostDTO postDTO, @RequestHeader(value="Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            response.put("message", "Invalid or missing Authorization header");
-            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            throw new InvalidAuthorizationHeaderException();
         }
-
-        String token = authHeader.replace("Bearer ", "");
-
-        if(!jwtParser.isAdmin(token)){
-            response.put("message", "Access denied");
-            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        if (!jwtParser.isAdmin(authHeader)) {
+            throw new ForbiddenException("Access denied: admin role required");
         }
 
         postService.createPost(postDTO);
 
-        response.put("message", "Post created successfully");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok().build();
 
     }
 }

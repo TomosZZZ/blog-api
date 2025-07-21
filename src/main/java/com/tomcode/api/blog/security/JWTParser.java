@@ -13,7 +13,9 @@ public class JWTParser {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    public boolean isAdmin(String token) {
+    public boolean isAdmin(String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+
         Claims claims = decodeJWT(token);
         String role = claims.get("role", String.class);
         return "ADMIN".equals(role);

@@ -1,5 +1,6 @@
 package com.tomcode.api.blog.entity;
 
+import com.tomcode.api.blog.dto.PostDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -27,4 +28,13 @@ public class Post {
 
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
+
+    public Post(PostDTO postDTO) {
+        this.title = postDTO.getTitle();
+        this.content = postDTO.getContent();
+        this.thumbnail = postDTO.getThumbnail();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+    public Post() {}
 }
