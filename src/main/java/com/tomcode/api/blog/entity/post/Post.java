@@ -1,4 +1,4 @@
-package com.tomcode.api.blog.entity;
+package com.tomcode.api.blog.entity.post;
 
 import com.tomcode.api.blog.dto.PostDTO;
 import jakarta.persistence.*;
@@ -13,15 +13,8 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "title")
-    private String title;
-
-    @Column(name = "content", columnDefinition = "TEXT")
-    private String content;
-
-    @Lob
-    @Column(name="thumbnail", columnDefinition = "MEDIUMTEXT")
-    private String thumbnail;
+    @Embedded
+    private PostDetails details;
 
     @Column(name="created_at")
     private LocalDateTime createdAt;
@@ -29,12 +22,22 @@ public class Post {
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
 
-    public Post(PostDTO postDTO) {
-        this.title = postDTO.getTitle();
-        this.content = postDTO.getContent();
-        this.thumbnail = postDTO.getThumbnail();
+    public Post(PostDetails details) {
+        this.details = details;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
     public Post() {}
+
+    public String getTitle() {
+        return details.getTitle();
+    }
+
+    public String getContent() {
+        return details.getContent();
+    }
+
+    public String getThumbnail() {
+        return details.getThumbnail();
+    }
 }

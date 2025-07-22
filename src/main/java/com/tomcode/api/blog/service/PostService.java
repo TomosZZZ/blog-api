@@ -1,7 +1,8 @@
 package com.tomcode.api.blog.service;
 
 import com.tomcode.api.blog.dto.PostDTO;
-import com.tomcode.api.blog.entity.Post;
+import com.tomcode.api.blog.entity.post.Post;
+import com.tomcode.api.blog.entity.post.PostDetails;
 import com.tomcode.api.blog.repository.PostRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -17,8 +18,10 @@ public class PostService {
     }
 
     public void createPost(PostDTO postDTO) {
-        Post post = new Post(postDTO);
 
+        PostDetails details = new PostDetails(postDTO.getTitle(), postDTO.getContent(), postDTO.getThumbnail());
+
+        Post post = new Post(details);
         postRepository.save(post);
 
     }
