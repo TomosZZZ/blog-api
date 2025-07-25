@@ -1,6 +1,6 @@
 package com.tomcode.api.blog.entity.post;
 
-import com.tomcode.api.blog.dto.PostDTO;
+import com.tomcode.api.blog.util.SlugUtil;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -15,6 +15,9 @@ public class Post {
 
     @Embedded
     private PostDetails details;
+
+    @Column
+    private String slug;
 
     @Column(name="created_at")
     private LocalDateTime createdAt;
@@ -39,5 +42,12 @@ public class Post {
 
     public String getThumbnail() {
         return details.getThumbnail();
+    }
+
+    public void generateSlug(){
+        if (this.slug == null && this.details != null) {
+            String baseSlug = SlugUtil.toSlug(this.details.getTitle());
+            this.slug = baseSlug + "-" + this.id;
+        }
     }
 }

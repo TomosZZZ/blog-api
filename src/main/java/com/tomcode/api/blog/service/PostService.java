@@ -20,8 +20,9 @@ public class PostService {
     public void createPost(PostDTO postDTO) {
 
         PostDetails details = new PostDetails(postDTO.getTitle(), postDTO.getContent(), postDTO.getThumbnail());
-
         Post post = new Post(details);
+        postRepository.save(post);
+        post.generateSlug();
         postRepository.save(post);
 
     }
