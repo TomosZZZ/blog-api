@@ -47,7 +47,7 @@ public class Post {
     public void generateSlug(){
         if (this.slug == null && this.details != null) {
             String baseSlug = SlugUtil.toSlug(this.details.getTitle());
-            this.slug = baseSlug + "-" + this.id;
+            this.slug = baseSlug + "~" + this.id;
         }
     }
 }
