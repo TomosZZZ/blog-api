@@ -33,7 +33,7 @@ public class PostController {
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
-    @GetMapping("get/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<Post> getPostById(@PathVariable String id) {
         Optional<Post> post = postService.getPostById(id);
         if(post.isEmpty()) {
