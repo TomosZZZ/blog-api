@@ -7,6 +7,7 @@ import com.tomcode.api.blog.exception.BadRequestException;
 import com.tomcode.api.blog.exception.PostNotFoundException;
 import com.tomcode.api.blog.security.JWTParser;
 import com.tomcode.api.blog.service.PostService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,8 +43,22 @@ public class PostController {
         return ResponseEntity.ok(post.get());
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deletePost(@PathVariable String id,@RequestHeader(value="Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new BadRequestException("Bad or missing authorization header");
+        }
+
+        if (!jwtParser.isAdmin(authHeader)) {
+            throw new ForbiddenException("Access denied: admin role required");
+        }
+
+        postService.deletePost(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/create")
-    public ResponseEntity createPost(@RequestBody PostDTO postDTO, @RequestHeader(value="Authorization") String authHeader) {
+    public ResponseEntity<String> createPost(@Valid @RequestBody PostDTO postDTO, @RequestHeader(value="Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new BadRequestException("Bad or missing authorization header");
         }
@@ -54,6 +69,5 @@ public class PostController {
         postService.createPost(postDTO);
 
         return ResponseEntity.ok().build();
-
     }
 }
