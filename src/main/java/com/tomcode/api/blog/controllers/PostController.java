@@ -70,4 +70,16 @@ public class PostController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<String> updatePost(@PathVariable String id, @Valid @RequestBody PostDTO postDTO, @RequestHeader(value = "Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new BadRequestException("Bad or missing authorization header");
+        }
+        if (!jwtParser.isAdmin(authHeader)) {
+            throw new ForbiddenException("Access denied: admin role required");
+        }
+        postService.updatePost(postDTO, id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -4,6 +4,7 @@ import com.tomcode.api.blog.dto.PostDTO;
 import com.tomcode.api.blog.entity.post.Post;
 import com.tomcode.api.blog.entity.post.PostDetails;
 import com.tomcode.api.blog.exception.PostNotFoundException;
+import com.tomcode.api.blog.exception.ResourceNotFoundException;
 import com.tomcode.api.blog.repository.PostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,5 +43,23 @@ public class PostService {
 
     public List<Post> getPosts() {
         return postRepository.findAll();
+    }
+
+    @Transactional
+    public void updatePost(PostDTO postDTO, String postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+
+        PostDetails updatedDetails = new PostDetails(
+                postDTO.getTitle(),
+                postDTO.getContent(),
+                postDTO.getThumbnail()
+        );
+        post.setDetails(updatedDetails);
+
+        post.generateSlug();
+
+        postRepository.save(post);
     }
 }
