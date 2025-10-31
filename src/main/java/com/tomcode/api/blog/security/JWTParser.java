@@ -15,11 +15,16 @@ public class JWTParser {
 
     public boolean isAdmin(String authHeader) {
         String token = authHeader.replace("Bearer ", "");
-
         Claims claims = decodeJWT(token);
         String role = claims.get("role", String.class);
         return "ADMIN".equals(role);
     }
+
+    public Claims getClaims(String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        return decodeJWT(token);
+    }
+
     private Claims decodeJWT(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())

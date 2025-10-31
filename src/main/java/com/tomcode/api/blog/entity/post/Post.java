@@ -1,23 +1,34 @@
 package com.tomcode.api.blog.entity.post;
 
-import com.tomcode.api.blog.util.SlugUtil;
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Getter
 @Entity
 @Table(name = "post")
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @Embedded
-    private PostDetails details;
+    private Title title;
 
-    @Column
-    private String slug;
+    @Setter
+    @Embedded
+    private Content content;
+
+    @Setter
+    @Embedded
+    private Thumbnail thumbnail;
+
+    @Embedded
+    private Slug slug;
 
     @Column(name="created_at")
     private LocalDateTime createdAt;
@@ -25,29 +36,20 @@ public class Post {
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
 
-    public Post(PostDetails details) {
-        this.details = details;
+    public Post(Title title, Thumbnail thumbnail, Content content, UUID id) {
+        this.id = id;
+        this.slug = Slug.of(title.getTitle(), id);
+        this.title = title;
+        this.thumbnail = thumbnail;
+        this.content = content;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
     public Post() {}
 
-    public String getTitle() {
-        return details.getTitle();
+    public void setTitle(Title title) {
+        this.title = title;
+        this.slug = Slug.of(title.getTitle(), id);
     }
 
-    public String getContent() {
-        return details.getContent();
-    }
-
-    public String getThumbnail() {
-        return details.getThumbnail();
-    }
-
-    public void generateSlug(){
-        if (this.slug == null && this.details != null) {
-            String baseSlug = SlugUtil.toSlug(this.details.getTitle());
-            this.slug = baseSlug + "~" + this.id;
-        }
-    }
 }

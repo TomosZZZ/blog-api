@@ -13,7 +13,7 @@ public class User {
 
     @Id
     @Column(columnDefinition = "varchar(191)")
-    private String id; // cuid() -> String
+    private String id;
 
     private String name;
 
@@ -44,5 +44,5 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Gettery/settery
+
 }

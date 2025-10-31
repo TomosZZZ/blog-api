@@ -6,11 +6,9 @@ import com.tomcode.api.blog.exception.BadRequestException;
 import com.tomcode.api.blog.exception.ForbiddenException;
 import com.tomcode.api.blog.security.JWTParser;
 import com.tomcode.api.blog.service.UserService;
+import io.jsonwebtoken.Claims;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,5 +34,20 @@ public class UserController {
 
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<User> deleteUser(@PathVariable("id") String id, @RequestHeader(value="Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new BadRequestException("Bad or missing authorization header");
+        }
+        if (!jwtParser.isAdmin(authHeader)) {
+            throw new ForbiddenException("Access denied: admin role required");
+        }
+
+        Claims claims = jwtParser.getClaims(authHeader);
+
+        userService.deleteUser(id,claims);
+        return ResponseEntity.noContent().build();
     }
 }

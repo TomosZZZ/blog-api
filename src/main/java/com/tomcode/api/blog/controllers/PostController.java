@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @RestController
@@ -35,7 +36,7 @@ public class PostController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable String id) {
+    public ResponseEntity<Post> getPostById(@PathVariable UUID id) {
         Optional<Post> post = postService.getPostById(id);
         if(post.isEmpty()) {
             throw new PostNotFoundException(id);
@@ -44,7 +45,7 @@ public class PostController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable String id,@RequestHeader(value="Authorization") String authHeader) {
+    public ResponseEntity<String> deletePost(@PathVariable UUID id,@RequestHeader(value="Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new BadRequestException("Bad or missing authorization header");
         }
@@ -72,7 +73,7 @@ public class PostController {
     }
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<String> updatePost(@PathVariable String id, @Valid @RequestBody PostDTO postDTO, @RequestHeader(value = "Authorization") String authHeader) {
+    public ResponseEntity<String> updatePost(@PathVariable UUID id, @Valid @RequestBody PostDTO postDTO, @RequestHeader(value = "Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new BadRequestException("Bad or missing authorization header");
         }

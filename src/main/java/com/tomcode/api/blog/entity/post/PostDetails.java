@@ -20,12 +20,8 @@ public class PostDetails {
     protected PostDetails() {}
 
     public PostDetails(String title, String content, String thumbnail) {
-        if(title.length()>50 || title.length()<3){
-            throw new IllegalArgumentException("Title length must be between 3 and 50 characters");
-        }
-        if(thumbnail.isBlank()){
-            throw new IllegalArgumentException("Thumbnail cannot be empty");
-        }
+
+
         this.title = title;
         this.content = content;
         this.thumbnail = thumbnail;
