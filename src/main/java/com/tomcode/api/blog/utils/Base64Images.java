@@ -33,6 +33,8 @@ public final class Base64Images {
         String mime = parts[0];
         String raw = normalizeRawBase64(parts[1]);
 
+        if(raw == null) return false;
+
         if (mime != null && !ALLOWED_MIME.contains(mime.toLowerCase())) {
             return false;
         }
