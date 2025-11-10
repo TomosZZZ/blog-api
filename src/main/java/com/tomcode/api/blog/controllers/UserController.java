@@ -23,7 +23,7 @@ public class UserController {
         this.jwtParser = jwtParser;
     }
 
-    @GetMapping("/get")
+    @GetMapping
     public ResponseEntity<List<User>> getAllUsers(@RequestHeader(value="Authorization") String authHeader) {
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -37,7 +37,7 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable("id") String id, @RequestHeader(value="Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new BadRequestException("Bad or missing authorization header");
@@ -52,7 +52,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/update/{id}/role")
+    @PatchMapping("/{id}/role")
     public ResponseEntity<String> updateUserRole(@PathVariable("id") String id, @RequestBody RoleRequest role , @RequestHeader(value="Authorization") String authHeader) {
         System.out.println("Test update");
 

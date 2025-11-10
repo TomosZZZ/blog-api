@@ -29,13 +29,13 @@ public class PostController {
         this.jwtParser = jwtParser;
     }
 
-    @GetMapping("/get")
+    @GetMapping
     public ResponseEntity<List<Post>> getAllPosts() {
         List<Post> posts =  postService.getPosts();
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Post> getPostById(@PathVariable UUID id) {
         Optional<Post> post = postService.getPostById(id);
         if(post.isEmpty()) {
@@ -44,7 +44,7 @@ public class PostController {
         return ResponseEntity.ok(post.get());
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable UUID id,@RequestHeader(value="Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new BadRequestException("Bad or missing authorization header");
@@ -58,7 +58,7 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<String> createPost(@Valid @RequestBody PostDTO postDTO, @RequestHeader(value="Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new BadRequestException("Bad or missing authorization header");
@@ -72,7 +72,7 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/update/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<String> updatePost(@PathVariable UUID id, @Valid @RequestBody PostDTO postDTO, @RequestHeader(value = "Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new BadRequestException("Bad or missing authorization header");
