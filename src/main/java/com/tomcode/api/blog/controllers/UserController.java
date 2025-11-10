@@ -1,6 +1,7 @@
 package com.tomcode.api.blog.controllers;
 
 
+import com.tomcode.api.blog.entity.user.RoleRequest;
 import com.tomcode.api.blog.entity.user.User;
 import com.tomcode.api.blog.exception.BadRequestException;
 import com.tomcode.api.blog.exception.ForbiddenException;
@@ -48,6 +49,22 @@ public class UserController {
         Claims claims = jwtParser.getClaims(authHeader);
 
         userService.deleteUser(id,claims);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/update/{id}/role")
+    public ResponseEntity<String> updateUserRole(@PathVariable("id") String id, @RequestBody RoleRequest role , @RequestHeader(value="Authorization") String authHeader) {
+        System.out.println("Test update");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new BadRequestException("Bad or missing authorization header");
+        }
+        if (!jwtParser.isAdmin(authHeader)) {
+            throw new ForbiddenException("Access denied: admin role required");
+        }
+
+        Claims claims = jwtParser.getClaims(authHeader);
+        userService.updateUserRole(id,claims,role.getRole());
         return ResponseEntity.noContent().build();
     }
 }
