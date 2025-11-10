@@ -3,8 +3,6 @@ package com.tomcode.api.blog.controllers;
 
 import com.tomcode.api.blog.entity.user.RoleRequest;
 import com.tomcode.api.blog.entity.user.User;
-import com.tomcode.api.blog.exception.BadRequestException;
-import com.tomcode.api.blog.exception.ForbiddenException;
 import com.tomcode.api.blog.security.JWTParser;
 import com.tomcode.api.blog.service.UserService;
 import io.jsonwebtoken.Claims;
@@ -26,12 +24,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers(@RequestHeader(value="Authorization") String authHeader) {
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new BadRequestException("Bad or missing authorization header");
-        }
-        if (!jwtParser.isAdmin(authHeader)) {
-            throw new ForbiddenException("Access denied: admin role required");
-        }
+        jwtParser.validateAdminPrivileges(authHeader);
 
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
@@ -39,12 +32,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable("id") String id, @RequestHeader(value="Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new BadRequestException("Bad or missing authorization header");
-        }
-        if (!jwtParser.isAdmin(authHeader)) {
-            throw new ForbiddenException("Access denied: admin role required");
-        }
+        jwtParser.validateAdminPrivileges(authHeader);
 
         Claims claims = jwtParser.getClaims(authHeader);
 
@@ -54,17 +42,11 @@ public class UserController {
 
     @PatchMapping("/{id}/role")
     public ResponseEntity<String> updateUserRole(@PathVariable("id") String id, @RequestBody RoleRequest role , @RequestHeader(value="Authorization") String authHeader) {
-        System.out.println("Test update");
-
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new BadRequestException("Bad or missing authorization header");
-        }
-        if (!jwtParser.isAdmin(authHeader)) {
-            throw new ForbiddenException("Access denied: admin role required");
-        }
+        jwtParser.validateAdminPrivileges(authHeader);
 
         Claims claims = jwtParser.getClaims(authHeader);
         userService.updateUserRole(id,claims,role.getRole());
         return ResponseEntity.noContent().build();
     }
+
 }

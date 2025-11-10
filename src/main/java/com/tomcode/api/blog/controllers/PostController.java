@@ -2,8 +2,6 @@ package com.tomcode.api.blog.controllers;
 
 import com.tomcode.api.blog.dto.PostDTO;
 import com.tomcode.api.blog.entity.post.Post;
-import com.tomcode.api.blog.exception.ForbiddenException;
-import com.tomcode.api.blog.exception.BadRequestException;
 import com.tomcode.api.blog.exception.PostNotFoundException;
 import com.tomcode.api.blog.security.JWTParser;
 import com.tomcode.api.blog.service.PostService;
@@ -46,13 +44,7 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable UUID id,@RequestHeader(value="Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new BadRequestException("Bad or missing authorization header");
-        }
-
-        if (!jwtParser.isAdmin(authHeader)) {
-            throw new ForbiddenException("Access denied: admin role required");
-        }
+        jwtParser.validateEditorOrAdminPrivileges(authHeader);
 
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
@@ -60,12 +52,8 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<String> createPost(@Valid @RequestBody PostDTO postDTO, @RequestHeader(value="Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new BadRequestException("Bad or missing authorization header");
-        }
-        if (!jwtParser.isAdmin(authHeader)) {
-            throw new ForbiddenException("Access denied: admin role required");
-        }
+
+        jwtParser.validateEditorOrAdminPrivileges(authHeader);
 
         postService.createPost(postDTO);
 
@@ -74,12 +62,7 @@ public class PostController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updatePost(@PathVariable UUID id, @Valid @RequestBody PostDTO postDTO, @RequestHeader(value = "Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new BadRequestException("Bad or missing authorization header");
-        }
-        if (!jwtParser.isAdmin(authHeader)) {
-            throw new ForbiddenException("Access denied: admin role required");
-        }
+        jwtParser.validateEditorOrAdminPrivileges(authHeader);
         postService.updatePost(postDTO, id);
         return ResponseEntity.noContent().build();
     }
