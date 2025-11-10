@@ -13,7 +13,6 @@ import java.util.UUID;
 @Table(name = "post")
 public class Post {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Embedded
