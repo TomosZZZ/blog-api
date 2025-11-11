@@ -1,6 +1,7 @@
 package com.tomcode.api.blog.entity.post;
 
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.text.Normalizer;
@@ -8,6 +9,7 @@ import java.util.UUID;
 
 @Embeddable
 @NoArgsConstructor
+@Getter
 public class Slug {
     private String slug;
     

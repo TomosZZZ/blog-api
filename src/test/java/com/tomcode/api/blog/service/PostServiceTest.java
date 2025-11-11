@@ -1,6 +1,7 @@
 package com.tomcode.api.blog.service;
 
 import com.tomcode.api.blog.dto.PostDTO;
+import com.tomcode.api.blog.dto.PostResponse;
 import com.tomcode.api.blog.entity.post.Post;
 import com.tomcode.api.blog.exception.PostNotFoundException;
 import com.tomcode.api.blog.repository.InMemoryPostRepository;
@@ -35,7 +36,7 @@ public class PostServiceTest {
         postService.deletePost(id);
 
         // then
-        assertTrue(postService.getPostById(id).isEmpty(), "Post should be removed");
+        assertThrows(PostNotFoundException.class, () -> postService.getPostById(id));
         assertFalse(postRepository.existsById(id), "Repository should report non-existence");
     }
 
@@ -48,14 +49,12 @@ public class PostServiceTest {
         UUID id = postService.createPost(dto);
 
         // then
-        Optional<Post> maybePost = postService.getPostById(id);
-        assertTrue(maybePost.isPresent(), "Post should be present after creation");
-        Post p = maybePost.get();
+        PostResponse response = postService.getPostById(id);
 
-        assertEquals(id, p.getId(), "Returned id should match entity id");
-        assertEquals(dto.getTitle(), p.getTitle().getTitle());
-        assertEquals(dto.getContent(), p.getContent().getContent());
-        assertEquals(dto.getThumbnail(), p.getThumbnail().getThumbnail());
+        assertEquals(id.toString(), response.id());
+        assertEquals(dto.getTitle(), response.title());
+        assertEquals(dto.getContent(), response.content());
+        assertEquals(dto.getThumbnail(), response.thumbnail());
 
     }
 
@@ -69,11 +68,11 @@ public class PostServiceTest {
         postService.updatePost(updated, id);
 
         // then
-        Post p = postService.getPostById(id).orElseThrow();
+        PostResponse response = postService.getPostById(id);
         assertAll(
-                () -> assertEquals("New", p.getTitle().getTitle()),
-                () -> assertEquals("New content", p.getContent().getContent()),
-                () -> assertEquals("bmV3", p.getThumbnail().getThumbnail())
+                () -> assertEquals("New", response.title()),
+                () -> assertEquals("New content", response.content()),
+                () -> assertEquals("bmV3", response.thumbnail())
         );
     }
 

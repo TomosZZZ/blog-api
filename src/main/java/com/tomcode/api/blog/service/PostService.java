@@ -1,6 +1,7 @@
 package com.tomcode.api.blog.service;
 
 import com.tomcode.api.blog.dto.PostDTO;
+import com.tomcode.api.blog.dto.PostResponse;
 import com.tomcode.api.blog.entity.post.*;
 import com.tomcode.api.blog.exception.PostNotFoundException;
 import com.tomcode.api.blog.exception.ResourceNotFoundException;
@@ -42,12 +43,16 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    public Optional<Post> getPostById(UUID id) {
-        return postRepository.findById(id);
+    public PostResponse getPostById(UUID id) {
+        Optional<Post> postOptional =  postRepository.findById(id);
+        if(postOptional.isEmpty()) {
+            throw new PostNotFoundException(id);
+        }
+        return toResponse(postOptional.get());
     }
 
-    public List<Post> getPosts() {
-        return postRepository.findAll();
+    public List<PostResponse> getPosts() {
+        return postRepository.findAll().stream().map(this::toResponse).toList();
     }
 
     @Transactional
@@ -65,5 +70,19 @@ public class PostService {
         post.setThumbnail(thumbnail);
 
         postRepository.save(post);
+    }
+
+    private PostResponse toResponse(Post post){
+        return new PostResponse(
+                post.getId().toString(),
+                post.getTitle().getTitle(),
+                post.getSlug().getSlug(),
+                post.getThumbnail().getThumbnail(),
+                post.getContent().getContent(),
+                post.getCreatedAt().toString(),
+                post.getUpdatedAt().toString()
+
+        );
+
     }
 }

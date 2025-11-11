@@ -1,6 +1,7 @@
 package com.tomcode.api.blog.controllers;
 
 import com.tomcode.api.blog.dto.PostDTO;
+import com.tomcode.api.blog.dto.PostResponse;
 import com.tomcode.api.blog.entity.post.Post;
 import com.tomcode.api.blog.exception.PostNotFoundException;
 import com.tomcode.api.blog.security.JWTParser;
@@ -19,8 +20,8 @@ import java.util.UUID;
 @RequestMapping(value = "/api/posts")
 public class PostController {
 
-    private JWTParser jwtParser;
-    private PostService postService;
+    private final JWTParser jwtParser;
+    private final PostService postService;
 
     public PostController(PostService postService, JWTParser jwtParser) {
         this.postService = postService;
@@ -28,18 +29,16 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Post>> getAllPosts() {
-        List<Post> posts =  postService.getPosts();
+    public ResponseEntity<List<PostResponse>> getAllPosts() {
+        List<PostResponse> posts =  postService.getPosts();
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable UUID id) {
-        Optional<Post> post = postService.getPostById(id);
-        if(post.isEmpty()) {
-            throw new PostNotFoundException(id);
-        }
-        return ResponseEntity.ok(post.get());
+    public ResponseEntity<PostResponse> getPostById(@PathVariable UUID id) {
+        PostResponse post = postService.getPostById(id);
+
+        return ResponseEntity.ok(post);
     }
 
     @DeleteMapping("/{id}")
