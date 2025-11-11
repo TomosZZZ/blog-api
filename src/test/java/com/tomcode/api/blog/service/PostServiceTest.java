@@ -1,18 +1,15 @@
 package com.tomcode.api.blog.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.tomcode.api.blog.dto.PostDTO;
 import com.tomcode.api.blog.dto.PostResponse;
-import com.tomcode.api.blog.entity.post.Post;
 import com.tomcode.api.blog.exception.PostNotFoundException;
 import com.tomcode.api.blog.repository.InMemoryPostRepository;
 import com.tomcode.api.blog.repository.PostRepository;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
-
-import java.util.Optional;
-import java.util.UUID;
 
 public class PostServiceTest {
     PostRepository postRepository;

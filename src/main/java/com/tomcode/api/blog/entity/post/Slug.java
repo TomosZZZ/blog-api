@@ -11,26 +11,25 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 public class Slug {
-    private String slug;
-    
-    private Slug(String slug) {
-        this.slug = slug;
-    }
+  private String slug;
 
-    public static Slug of(String title, UUID id){
-        String slugifiedTitle = slugify(title);
-        String slug = slugifiedTitle + "~" + id;
-        return new Slug(slug);
-    }
+  private Slug(String slug) {
+    this.slug = slug;
+  }
 
-    private static String slugify(String input) {
-        if(input == null || input.trim().equals("")){
-            return "";
-        }
-        String nowhitespace = input.trim().replaceAll("\\s+", "-");
-        String normalized = Normalizer.normalize(nowhitespace, Normalizer.Form.NFD);
-        String slug = normalized.replaceAll("[^\\w\\-]", "").toLowerCase();
-        return slug;
-    }
+  public static Slug of(String title, UUID id) {
+    String slugifiedTitle = slugify(title);
+    String slug = slugifiedTitle + "~" + id;
+    return new Slug(slug);
+  }
 
+  private static String slugify(String input) {
+    if (input == null || input.trim().equals("")) {
+      return "";
+    }
+    String nowhitespace = input.trim().replaceAll("\\s+", "-");
+    String normalized = Normalizer.normalize(nowhitespace, Normalizer.Form.NFD);
+    String slug = normalized.replaceAll("[^\\w\\-]", "").toLowerCase();
+    return slug;
+  }
 }

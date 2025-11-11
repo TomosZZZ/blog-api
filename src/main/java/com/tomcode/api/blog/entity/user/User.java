@@ -11,38 +11,36 @@ import java.util.List;
 @Table(name = "User")
 public class User {
 
-    @Id
-    @Column(columnDefinition = "varchar(191)")
-    private String id;
+  @Id
+  @Column(columnDefinition = "varchar(191)")
+  private String id;
 
-    private String name;
+  private String name;
 
-    @Column(unique = true)
-    private String username;
+  @Column(unique = true)
+  private String username;
 
-    @Column(unique = true)
-    private String email;
+  @Column(unique = true)
+  private String email;
 
-    @Column(name = "email_verified")
-    private LocalDateTime emailVerified;
+  @Column(name = "email_verified")
+  private LocalDateTime emailVerified;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role = UserRole.USER;
+  @Enumerated(EnumType.STRING)
+  private UserRole role = UserRole.USER;
 
-    private String password;
-    private String image;
+  private String password;
+  private String image;
 
-    @OneToMany(mappedBy = "user")
-    private List<Account> accounts;
+  @OneToMany(mappedBy = "user")
+  private List<Account> accounts;
 
-    @OneToMany(mappedBy = "user")
-    private List<Session> sessions;
+  @OneToMany(mappedBy = "user")
+  private List<Session> sessions;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+  @Column(name = "created_at")
+  private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
 }

@@ -1,7 +1,6 @@
 package com.tomcode.api.blog.repository;
 
 import com.tomcode.api.blog.entity.post.Post;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

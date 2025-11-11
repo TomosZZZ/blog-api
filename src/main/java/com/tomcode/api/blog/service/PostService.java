@@ -4,85 +4,81 @@ import com.tomcode.api.blog.dto.PostDTO;
 import com.tomcode.api.blog.dto.PostResponse;
 import com.tomcode.api.blog.entity.post.*;
 import com.tomcode.api.blog.exception.PostNotFoundException;
-import com.tomcode.api.blog.exception.ResourceNotFoundException;
 import com.tomcode.api.blog.repository.PostRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PostService {
 
-    private PostRepository postRepository;
+  private PostRepository postRepository;
 
-    public PostService(PostRepository postRepository) {
-        this.postRepository = postRepository;
+  public PostService(PostRepository postRepository) {
+    this.postRepository = postRepository;
+  }
+
+  @Transactional
+  public UUID createPost(PostDTO postDTO) {
+
+    Title title = new Title(postDTO.getTitle());
+    Content content = new Content(postDTO.getContent());
+    Thumbnail thumbnail = new Thumbnail(postDTO.getThumbnail());
+
+    UUID id = UUID.randomUUID();
+    Post post = new Post(title, thumbnail, content, id);
+    postRepository.save(post);
+    return post.getId();
+  }
+
+  @Transactional
+  public void deletePost(UUID postId) {
+
+    if (!postRepository.existsById(postId)) {
+      throw new PostNotFoundException(postId);
     }
-    @Transactional
-    public UUID createPost(PostDTO postDTO) {
+    postRepository.deleteById(postId);
+  }
 
-        Title title = new Title(postDTO.getTitle());
-        Content content = new Content(postDTO.getContent());
-        Thumbnail thumbnail = new Thumbnail(postDTO.getThumbnail());
-
-        UUID id = UUID.randomUUID();
-        Post post = new Post(title,thumbnail,content ,id);
-        postRepository.save(post);
-        return post.getId();
+  public PostResponse getPostById(UUID id) {
+    Optional<Post> postOptional = postRepository.findById(id);
+    if (postOptional.isEmpty()) {
+      throw new PostNotFoundException(id);
     }
+    return toResponse(postOptional.get());
+  }
 
-    @Transactional
-    public void deletePost(UUID postId) {
+  public List<PostResponse> getPosts() {
+    return postRepository.findAll().stream().map(this::toResponse).toList();
+  }
 
-        if (!postRepository.existsById(postId)) {
-            throw new PostNotFoundException(postId);
-        }
-        postRepository.deleteById(postId);
-    }
+  @Transactional
+  public void updatePost(PostDTO postDTO, UUID postId) {
 
-    public PostResponse getPostById(UUID id) {
-        Optional<Post> postOptional =  postRepository.findById(id);
-        if(postOptional.isEmpty()) {
-            throw new PostNotFoundException(id);
-        }
-        return toResponse(postOptional.get());
-    }
+    Post post =
+        postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
 
-    public List<PostResponse> getPosts() {
-        return postRepository.findAll().stream().map(this::toResponse).toList();
-    }
+    Title title = new Title(postDTO.getTitle());
+    Content content = new Content(postDTO.getContent());
+    Thumbnail thumbnail = new Thumbnail(postDTO.getThumbnail());
 
-    @Transactional
-    public void updatePost(PostDTO postDTO, UUID postId) {
+    post.setTitle(title);
+    post.setContent(content);
+    post.setThumbnail(thumbnail);
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException(postId));
+    postRepository.save(post);
+  }
 
-        Title title = new Title(postDTO.getTitle());
-        Content content = new Content(postDTO.getContent());
-        Thumbnail thumbnail = new Thumbnail(postDTO.getThumbnail());
-
-        post.setTitle(title);
-        post.setContent(content);
-        post.setThumbnail(thumbnail);
-
-        postRepository.save(post);
-    }
-
-    private PostResponse toResponse(Post post){
-        return new PostResponse(
-                post.getId().toString(),
-                post.getTitle().getTitle(),
-                post.getSlug().getSlug(),
-                post.getThumbnail().getThumbnail(),
-                post.getContent().getContent(),
-                post.getCreatedAt().toString(),
-                post.getUpdatedAt().toString()
-
-        );
-
-    }
+  private PostResponse toResponse(Post post) {
+    return new PostResponse(
+        post.getId().toString(),
+        post.getTitle().getTitle(),
+        post.getSlug().getSlug(),
+        post.getThumbnail().getThumbnail(),
+        post.getContent().getContent(),
+        post.getCreatedAt().toString(),
+        post.getUpdatedAt().toString());
+  }
 }
