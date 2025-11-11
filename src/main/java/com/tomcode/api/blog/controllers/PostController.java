@@ -1,27 +1,25 @@
 package com.tomcode.api.blog.controllers;
 
-import com.tomcode.api.blog.dto.PostDTO;
+import com.tomcode.api.blog.dto.CreatePostDTO;
 import com.tomcode.api.blog.dto.PostResponse;
+import com.tomcode.api.blog.dto.UpdatePostDTO;
 import com.tomcode.api.blog.security.JWTParser;
 import com.tomcode.api.blog.service.PostService;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/api/posts")
 public class PostController {
 
   private final JWTParser jwtParser;
   private final PostService postService;
-
-  public PostController(PostService postService, JWTParser jwtParser) {
-    this.postService = postService;
-    this.jwtParser = jwtParser;
-  }
 
   @GetMapping
   public ResponseEntity<List<PostResponse>> getAllPosts() {
@@ -47,12 +45,12 @@ public class PostController {
 
   @PostMapping
   public ResponseEntity<String> createPost(
-      @Valid @RequestBody PostDTO postDTO,
+      @Valid @RequestBody CreatePostDTO createPostDTO,
       @RequestHeader(value = "Authorization") String authHeader) {
 
     jwtParser.validateEditorOrAdminPrivileges(authHeader);
 
-    postService.createPost(postDTO);
+    postService.createPost(createPostDTO);
 
     return ResponseEntity.ok().build();
   }
@@ -60,10 +58,10 @@ public class PostController {
   @PatchMapping("/{id}")
   public ResponseEntity<String> updatePost(
       @PathVariable UUID id,
-      @Valid @RequestBody PostDTO postDTO,
+      @Valid @RequestBody UpdatePostDTO updatePostDTO,
       @RequestHeader(value = "Authorization") String authHeader) {
     jwtParser.validateEditorOrAdminPrivileges(authHeader);
-    postService.updatePost(postDTO, id);
+    postService.updatePost(updatePostDTO, id);
     return ResponseEntity.noContent().build();
   }
 }

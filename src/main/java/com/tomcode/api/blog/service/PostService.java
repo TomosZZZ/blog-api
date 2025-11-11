@@ -1,31 +1,30 @@
 package com.tomcode.api.blog.service;
 
-import com.tomcode.api.blog.dto.PostDTO;
+import com.tomcode.api.blog.dto.CreatePostDTO;
 import com.tomcode.api.blog.dto.PostResponse;
+import com.tomcode.api.blog.dto.UpdatePostDTO;
 import com.tomcode.api.blog.entity.post.*;
 import com.tomcode.api.blog.exception.PostNotFoundException;
 import com.tomcode.api.blog.repository.PostRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@RequiredArgsConstructor
 @Service
 public class PostService {
 
-  private PostRepository postRepository;
-
-  public PostService(PostRepository postRepository) {
-    this.postRepository = postRepository;
-  }
+  private final PostRepository postRepository;
 
   @Transactional
-  public UUID createPost(PostDTO postDTO) {
+  public UUID createPost(CreatePostDTO createPostDTO) {
 
-    Title title = new Title(postDTO.getTitle());
-    Content content = new Content(postDTO.getContent());
-    Thumbnail thumbnail = new Thumbnail(postDTO.getThumbnail());
+    Title title = new Title(createPostDTO.getTitle());
+    Content content = new Content(createPostDTO.getContent());
+    Thumbnail thumbnail = new Thumbnail(createPostDTO.getThumbnail());
 
     UUID id = UUID.randomUUID();
     Post post = new Post(title, thumbnail, content, id);
@@ -55,14 +54,14 @@ public class PostService {
   }
 
   @Transactional
-  public void updatePost(PostDTO postDTO, UUID postId) {
+  public void updatePost(UpdatePostDTO updatePostDTO, UUID postId) {
 
     Post post =
         postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
 
-    Title title = new Title(postDTO.getTitle());
-    Content content = new Content(postDTO.getContent());
-    Thumbnail thumbnail = new Thumbnail(postDTO.getThumbnail());
+    Title title = new Title(updatePostDTO.getTitle());
+    Content content = new Content(updatePostDTO.getContent());
+    Thumbnail thumbnail = new Thumbnail(updatePostDTO.getThumbnail());
 
     post.setTitle(title);
     post.setContent(content);

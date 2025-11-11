@@ -7,17 +7,16 @@ import com.tomcode.api.blog.exception.UserNotFoundException;
 import com.tomcode.api.blog.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@RequiredArgsConstructor
 @Service
 public class UserService {
 
-  UserRepository userRepository;
-
-  public UserService(UserRepository userRepository) {
-    this.userRepository = userRepository;
-  }
+  private final UserRepository userRepository;
 
   public List<User> getAllUsers() {
     return userRepository.findAll();

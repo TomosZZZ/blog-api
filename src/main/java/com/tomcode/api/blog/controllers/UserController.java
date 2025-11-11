@@ -6,19 +6,16 @@ import com.tomcode.api.blog.security.JWTParser;
 import com.tomcode.api.blog.service.UserService;
 import io.jsonwebtoken.Claims;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-  UserService userService;
-  JWTParser jwtParser;
-
-  public UserController(UserService userService, JWTParser jwtParser) {
-    this.userService = userService;
-    this.jwtParser = jwtParser;
-  }
+  private final UserService userService;
+  private final JWTParser jwtParser;
 
   @GetMapping
   public ResponseEntity<List<User>> getAllUsers(
