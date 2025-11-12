@@ -43,4 +43,8 @@ public class User {
 
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
+
+  public boolean hasRole(UserRole role) {
+    return this.role == role;
+  }
 }
