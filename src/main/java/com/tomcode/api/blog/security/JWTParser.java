@@ -1,7 +1,7 @@
 package com.tomcode.api.blog.security;
 
-import com.tomcode.api.blog.exception.BadRequestException;
-import com.tomcode.api.blog.exception.ForbiddenException;
+import com.tomcode.api.blog.common.exception.BadRequestException;
+import com.tomcode.api.blog.common.exception.ForbiddenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

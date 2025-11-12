@@ -2,7 +2,7 @@ package com.tomcode.api.blog.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.tomcode.api.blog.utils.Base64Images;
+import com.tomcode.api.blog.common.utils.Base64Images;
 import org.junit.jupiter.api.Test;
 
 class Base64ImagesTest {
