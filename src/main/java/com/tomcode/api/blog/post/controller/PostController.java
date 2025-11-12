@@ -5,6 +5,7 @@ import com.tomcode.api.blog.post.dto.PostResponse;
 import com.tomcode.api.blog.post.dto.UpdatePostDTO;
 import com.tomcode.api.blog.security.JWTParser;
 import com.tomcode.api.blog.post.service.PostService;
+import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -46,11 +47,15 @@ public class PostController {
   @PostMapping
   public ResponseEntity<String> createPost(
       @Valid @RequestBody CreatePostDTO createPostDTO,
-      @RequestHeader(value = "Authorization") String authHeader) {
+      @RequestHeader(value = "Authorization") String authHeader,
+      @RequestParam(defaultValue = "false") boolean publishNow) {
 
     jwtParser.validateEditorOrAdminPrivileges(authHeader);
 
-    postService.createPost(createPostDTO);
+    Claims claims = jwtParser.getClaims(authHeader);
+    String authorId = claims.get("sub", String.class);
+
+    postService.createPost(createPostDTO, authorId, publishNow);
 
     return ResponseEntity.ok().build();
   }

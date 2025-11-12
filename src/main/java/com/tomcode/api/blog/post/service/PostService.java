@@ -1,14 +1,15 @@
 package com.tomcode.api.blog.post.service;
 
+import com.tomcode.api.blog.common.exception.PostNotFoundException;
 import com.tomcode.api.blog.post.dto.CreatePostDTO;
 import com.tomcode.api.blog.post.dto.PostResponse;
 import com.tomcode.api.blog.post.dto.UpdatePostDTO;
-import com.tomcode.api.blog.common.exception.PostNotFoundException;
-import com.tomcode.api.blog.post.entity.Content;
-import com.tomcode.api.blog.post.entity.Post;
-import com.tomcode.api.blog.post.entity.Thumbnail;
-import com.tomcode.api.blog.post.entity.Title;
+import com.tomcode.api.blog.post.entity.*;
 import com.tomcode.api.blog.post.repository.PostRepository;
+import com.tomcode.api.blog.user.entity.User;
+import com.tomcode.api.blog.user.entity.UserRole;
+import com.tomcode.api.blog.user.service.UserService;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,17 +22,30 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
 
   private final PostRepository postRepository;
+  private final UserService userService;
 
   @Transactional
-  public UUID createPost(CreatePostDTO createPostDTO) {
+  public UUID createPost(CreatePostDTO createPostDTO, String userId, Boolean publishNow) {
 
     Title title = new Title(createPostDTO.getTitle());
     Content content = new Content(createPostDTO.getContent());
     Thumbnail thumbnail = new Thumbnail(createPostDTO.getThumbnail());
-
     UUID id = UUID.randomUUID();
-    Post post = new Post(title, thumbnail, content, id);
+
+    User author = userService.getUserById(userId);
+    Post post = new Post(id, title, thumbnail, content, author);
     postRepository.save(post);
+
+    if (author.hasRole(UserRole.ADMIN)) {
+      post.setReviewer(author);
+      if (publishNow) {
+        post.setStatus(Status.PUBLISHED);
+        post.setPublishedAt(LocalDateTime.now());
+      } else {
+        post.setStatus(Status.REVIEWED);
+      }
+    }
+
     return post.getId();
   }
 
