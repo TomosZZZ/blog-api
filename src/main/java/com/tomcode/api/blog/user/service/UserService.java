@@ -7,6 +7,7 @@ import com.tomcode.api.blog.common.exception.UserNotFoundException;
 import com.tomcode.api.blog.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,14 @@ public class UserService {
 
   public List<User> getAllUsers() {
     return userRepository.findAll();
+  }
+
+  public User getUserById(String id) {
+    Optional<User> userOptional = userRepository.findById(id);
+    if (userOptional.isEmpty()) {
+      throw new UserNotFoundException(id);
+    }
+    return userOptional.get();
   }
 
   @Transactional
