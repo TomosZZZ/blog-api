@@ -7,6 +7,8 @@ import com.tomcode.api.blog.security.JWTParser;
 import com.tomcode.api.blog.post.service.PostService;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
+
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -55,9 +57,9 @@ public class PostController {
     Claims claims = jwtParser.getClaims(authHeader);
     String authorId = claims.get("sub", String.class);
 
-    postService.createPost(createPostDTO, authorId, publishNow);
-
-    return ResponseEntity.ok().build();
+    UUID id = postService.createPost(createPostDTO, authorId, publishNow);
+    URI location = URI.create("/api/posts/" + id);
+    return ResponseEntity.created(location).build();
   }
 
   @PatchMapping("/{id}")
