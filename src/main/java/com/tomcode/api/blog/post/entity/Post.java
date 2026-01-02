@@ -12,7 +12,7 @@ import lombok.Setter;
 @Table(name = "post")
 public class Post {
   @Id
-  @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+  @Column( updatable = false, nullable = false)
   private UUID id;
 
   @Embedded private Title title;
@@ -28,8 +28,8 @@ public class Post {
   @Column
   private Status status;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "author_id")
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "author_id", nullable = false)
   private User author;
 
   @Setter

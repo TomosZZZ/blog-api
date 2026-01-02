@@ -1,6 +1,8 @@
 package com.tomcode.api.blog.post.service;
 
+import com.tomcode.api.blog.common.exception.ForbiddenException;
 import com.tomcode.api.blog.common.exception.PostNotFoundException;
+import com.tomcode.api.blog.common.exception.UserNotFoundException;
 import com.tomcode.api.blog.post.dto.CreatePostDTO;
 import com.tomcode.api.blog.post.dto.PostResponse;
 import com.tomcode.api.blog.post.dto.UpdatePostDTO;
@@ -9,6 +11,7 @@ import com.tomcode.api.blog.post.repository.PostRepository;
 import com.tomcode.api.blog.user.entity.User;
 import com.tomcode.api.blog.user.entity.UserRole;
 import com.tomcode.api.blog.user.service.UserService;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -24,39 +27,8 @@ public class PostService {
   private final PostRepository postRepository;
   private final UserService userService;
 
-  @Transactional
-  public UUID createPost(CreatePostDTO createPostDTO, String userId, Boolean publishNow) {
 
-    Title title = new Title(createPostDTO.getTitle());
-    Content content = new Content(createPostDTO.getContent());
-    Thumbnail thumbnail = new Thumbnail(createPostDTO.getThumbnail());
-    UUID id = UUID.randomUUID();
 
-    User author = userService.getUserById(userId);
-    Post post = new Post(id, title, thumbnail, content, author);
-    postRepository.save(post);
-
-    if (author.hasRole(UserRole.ADMIN)) {
-      post.setReviewer(author);
-      if (publishNow) {
-        post.setStatus(Status.PUBLISHED);
-        post.setPublishedAt(LocalDateTime.now());
-      } else {
-        post.setStatus(Status.REVIEWED);
-      }
-    }
-
-    return post.getId();
-  }
-
-  @Transactional
-  public void deletePost(UUID postId) {
-
-    if (!postRepository.existsById(postId)) {
-      throw new PostNotFoundException(postId);
-    }
-    postRepository.deleteById(postId);
-  }
 
   public PostResponse getPostById(UUID id) {
     Optional<Post> postOptional = postRepository.findById(id);
@@ -71,20 +43,72 @@ public class PostService {
   }
 
   @Transactional
-  public void updatePost(UpdatePostDTO updatePostDTO, UUID postId) {
+  public UUID createPost(CreatePostDTO createPostDTO, String userEmail, Boolean publishNow) {
 
-    Post post =
-        postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
+    Title title = new Title(createPostDTO.getTitle());
+    Content content = new Content(createPostDTO.getContent());
+    Thumbnail thumbnail = new Thumbnail(createPostDTO.getThumbnail());
+    UUID id = UUID.randomUUID();
 
-    Title title = new Title(updatePostDTO.getTitle());
-    Content content = new Content(updatePostDTO.getContent());
-    Thumbnail thumbnail = new Thumbnail(updatePostDTO.getThumbnail());
+    Optional<User> author = userService.findByEmail(userEmail);
+    if(author.isEmpty()) {
+      throw new UserNotFoundException(userEmail);
+    }
 
-    post.setTitle(title);
-    post.setContent(content);
-    post.setThumbnail(thumbnail);
+    Post post = new Post(id, title, thumbnail, content, author.get());
+    postRepository.save(post);
+
+    if (author.get().hasRole(UserRole.ADMIN)) {
+      post.setReviewer(author.get());
+      if (publishNow) {
+        post.setStatus(Status.PUBLISHED);
+        post.setPublishedAt(LocalDateTime.now());
+      } else {
+        post.setStatus(Status.REVIEWED);
+      }
+    }
+
+    return post.getId();
+  }
+
+  @Transactional
+  public void updatePost(UUID postId, UpdatePostDTO updatePostDTO, String userEmail) {
+    Post post = getPostWithPermissionCheck(postId, userEmail);
+
+    post.setTitle(new Title(updatePostDTO.getTitle()));
+    post.setContent(new Content(updatePostDTO.getContent()));
+    post.setThumbnail(new Thumbnail(updatePostDTO.getThumbnail()));
 
     postRepository.save(post);
+  }
+  @Transactional
+  public void deletePost(UUID postId, String userEmail) {
+
+    Post post = getPostWithPermissionCheck(postId, userEmail);
+
+    postRepository.delete(post);
+  }
+  private Post getPostWithPermissionCheck(UUID postId, String userEmail) {
+
+    Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new PostNotFoundException(postId));
+
+    User user = userService.findByEmail(userEmail)
+            .orElseThrow(() -> new UserNotFoundException(userEmail));
+
+    if (post.getAuthor() == null) {
+      throw new IllegalStateException("Post has no author assigned");
+    }
+
+    boolean isAuthor = post.getAuthor().getId().equals(user.getId());
+    boolean isAdmin = user.hasRole(UserRole.ADMIN);
+
+    if (!isAuthor && !isAdmin) {
+      throw new ForbiddenException("You are not allowed to perform this action");
+    }
+
+
+    return post;
   }
 
   private PostResponse toResponse(Post post) {

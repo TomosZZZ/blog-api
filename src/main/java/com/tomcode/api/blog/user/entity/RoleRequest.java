@@ -1,13 +1,12 @@
 package com.tomcode.api.blog.user.entity;
 
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class RoleRequest {
+  @NotBlank
   private String role;
-
-  public String getRole() {
-    return role;
-  }
-
-  public void setRole(String role) {
-    this.role = role;
-  }
 }

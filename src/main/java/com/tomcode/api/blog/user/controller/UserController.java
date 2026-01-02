@@ -2,51 +2,49 @@ package com.tomcode.api.blog.user.controller;
 
 import com.tomcode.api.blog.user.entity.RoleRequest;
 import com.tomcode.api.blog.user.entity.User;
-import com.tomcode.api.blog.security.JWTParser;
+import com.tomcode.api.blog.user.entity.UserRole;
 import com.tomcode.api.blog.user.service.UserService;
-import io.jsonwebtoken.Claims;
+
 import java.util.List;
+import java.util.UUID;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/users")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
+
   private final UserService userService;
-  private final JWTParser jwtParser;
 
   @GetMapping
-  public ResponseEntity<List<User>> getAllUsers(
-      @RequestHeader(value = "Authorization") String authHeader) {
-
-    jwtParser.validateAdminPrivileges(authHeader);
-
-    List<User> users = userService.getAllUsers();
-    return ResponseEntity.ok(users);
+  public ResponseEntity<List<User>> getAllUsers() {
+    return ResponseEntity.ok(userService.getAllUsers());
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<User> deleteUser(
-      @PathVariable("id") String id, @RequestHeader(value = "Authorization") String authHeader) {
-    jwtParser.validateAdminPrivileges(authHeader);
+  public ResponseEntity<Void> deleteUser(
+          @PathVariable UUID id,
+          Authentication authentication) {
 
-    Claims claims = jwtParser.getClaims(authHeader);
-
-    userService.deleteUser(id, claims);
+    userService.deleteUser(id, authentication.getName());
     return ResponseEntity.noContent().build();
   }
 
   @PatchMapping("/{id}/role")
-  public ResponseEntity<String> updateUserRole(
-      @PathVariable("id") String id,
-      @RequestBody RoleRequest role,
-      @RequestHeader(value = "Authorization") String authHeader) {
-    jwtParser.validateAdminPrivileges(authHeader);
+  public ResponseEntity<Void> updateUserRole(
+          @PathVariable UUID id,
+          @Valid @RequestBody RoleRequest request,
+          Authentication authentication) {
 
-    Claims claims = jwtParser.getClaims(authHeader);
-    userService.updateUserRole(id, claims, role.getRole());
+    userService.updateUserRole(id, request.getRole(), authentication.getName());
+
     return ResponseEntity.noContent().build();
   }
 }
