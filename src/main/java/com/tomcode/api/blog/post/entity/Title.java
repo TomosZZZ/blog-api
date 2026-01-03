@@ -13,7 +13,7 @@ public class Title {
 
   public Title(String title) {
     if (title == null) {
-      throw new NullPointerException("Title cannot be null");
+      throw new IllegalArgumentException("Title cannot be null");
     }
 
     if (title.length() > 50 || title.length() < 3) {

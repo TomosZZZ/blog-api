@@ -2,6 +2,7 @@ package com.tomcode.api.blog.user.service;
 
 import com.tomcode.api.blog.common.exception.BadRequestException;
 import com.tomcode.api.blog.common.exception.EmailAlreadyExistsException;
+import com.tomcode.api.blog.common.exception.ForbiddenException;
 import com.tomcode.api.blog.common.exception.UserNotFoundException;
 import com.tomcode.api.blog.user.dto.CreateUserDTO;
 import com.tomcode.api.blog.user.entity.User;
@@ -40,6 +41,7 @@ public class UserService {
         return userOptional.get();
     }
 
+    @Transactional
     public UUID createUser(CreateUserDTO userDTO) {
         if(findByEmail(userDTO.getEmail()).isPresent()) {
             throw new EmailAlreadyExistsException(userDTO.getEmail());
@@ -59,7 +61,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(userId.toString()));
 
         if (admin.getId().equals(userToDelete.getId())) {
-            throw new IllegalArgumentException("You cannot delete yourself");
+      throw new ForbiddenException("You cannot delete yourself");
         }
 
         userRepo.delete(userToDelete);
@@ -78,7 +80,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(userId.toString()));
 
         if (admin.getId().equals(user.getId())) {
-            throw new IllegalArgumentException("You cannot change your own role");
+      throw new ForbiddenException("You cannot change your own role");
         }
 
         UserRole newRole;

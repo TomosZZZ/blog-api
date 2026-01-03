@@ -26,8 +26,8 @@ class JpaBasedPostRepository implements PostRepository {
   }
 
   @Override
-  public Optional<Post> findById(UUID s) {
-    return jpaPostRepository.findById(s);
+  public Optional<Post> findById(UUID id) {
+    return jpaPostRepository.findById(id);
   }
 
   @Override
@@ -36,8 +36,8 @@ class JpaBasedPostRepository implements PostRepository {
   }
 
   @Override
-  public boolean existsById(UUID s) {
-    return jpaPostRepository.existsById(s);
+  public boolean existsById(UUID id) {
+    return jpaPostRepository.existsById(id);
   }
 
   @Override

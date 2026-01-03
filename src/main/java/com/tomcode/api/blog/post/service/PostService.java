@@ -28,8 +28,6 @@ public class PostService {
   private final UserService userService;
 
 
-
-
   public PostResponse getPostById(UUID id) {
     Optional<Post> postOptional = postRepository.findById(id);
     if (postOptional.isEmpty()) {
@@ -81,6 +79,7 @@ public class PostService {
 
     postRepository.save(post);
   }
+
   @Transactional
   public void deletePost(UUID postId, String userEmail) {
 

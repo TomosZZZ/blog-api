@@ -7,19 +7,19 @@ import org.junit.jupiter.api.Test;
 
 class Base64ImagesTest {
 
-  // Prosty poprawny Base64 — "hello"
+  // Simple valid Base64 - "hello"
   private static final String VALID_BASE64 = "aGVsbG8=";
 
-  // Ten sam, ale w data URL
+  // Same but with data url
   private static final String VALID_DATA_URL = "data:image/jpeg;base64," + VALID_BASE64;
 
-  // Niepoprawny Base64 (ma znaki spoza alfabetu)
+  // Invalid Base64. Characters not from alphabet
   private static final String INVALID_BASE64 = "not@base64!!";
 
-  // Poprawny MIME, ale zły Base64
+  // Valid mime; invalid Base64
   private static final String BAD_DATA_URL = "data:image/png;base64," + INVALID_BASE64;
 
-  // Niedozwolony MIME
+  // Unsupported mime
   private static final String UNSUPPORTED_MIME_URL = "data:text/plain;base64," + VALID_BASE64;
 
   // -----------------------------
