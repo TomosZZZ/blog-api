@@ -137,6 +137,18 @@ public class UserServiceTests {
         assertThrows(BadRequestException.class, () ->  userService.updateUserRole(user.getId(), "NOT_SUPPORTED_ROLE", admin.getEmail()));
     }
 
+    @Test
+    void updateUserRole_shouldNotChangeAnythingWhenExceptionThrown() {
+        User admin = createAdmin("admin@mail.com");
+        User user = createUser("user@mail.com");
+
+        assertThrows(BadRequestException.class, () ->
+                userService.updateUserRole(user.getId(), "INVALID", admin.getEmail())
+        );
+
+        assertEquals(UserRole.USER, user.getRole());
+    }
+
 
 
 }
