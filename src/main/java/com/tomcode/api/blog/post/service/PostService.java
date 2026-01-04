@@ -116,6 +116,7 @@ public class PostService {
         post.getTitle().getTitle(),
         post.getSlug().getSlug(),
         post.getThumbnail().getThumbnail(),
+        post.getStatus(),
         post.getContent().getContent(),
         post.getCreatedAt().toString(),
         post.getUpdatedAt().toString());
