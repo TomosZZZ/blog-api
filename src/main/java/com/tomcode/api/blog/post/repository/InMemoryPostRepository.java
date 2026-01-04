@@ -36,4 +36,9 @@ public class InMemoryPostRepository implements PostRepository {
   public void deleteById(UUID uuid) {
     posts.remove(uuid);
   }
+
+  @Override
+  public List<Post> findAllByAuthorId(UUID authorId) {
+    return posts.values().stream().filter(p -> p.getAuthor().getId().equals(authorId)).toList();
+  }
 }

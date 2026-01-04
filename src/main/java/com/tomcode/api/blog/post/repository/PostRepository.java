@@ -12,4 +12,5 @@ public interface PostRepository {
     List<Post> findAll();
     boolean existsById(UUID s);
     void deleteById(UUID uuid);
+    List<Post> findAllByAuthorId(UUID id);
 }

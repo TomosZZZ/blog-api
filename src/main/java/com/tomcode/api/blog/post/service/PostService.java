@@ -40,6 +40,16 @@ public class PostService {
     return postRepository.findAll().stream().map(this::toResponse).toList();
   }
 
+  public List<PostResponse> getPostsForPanel(String email){
+
+    User user = userService.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+
+    if(user.hasRole(UserRole.ADMIN)){
+      return getPosts();
+    }
+    return postRepository.findAllByAuthorId(user.getId()).stream().map(this::toResponse).toList();
+  }
+
   @Transactional
   public UUID createPost(CreatePostDTO createPostDTO, String userEmail, Boolean publishNow) {
 

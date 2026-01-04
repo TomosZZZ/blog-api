@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-public interface JpaPostRepository extends JpaRepository<Post, UUID> {}
+public interface JpaPostRepository extends JpaRepository<Post, UUID> {
+  List<Post> findAllByAuthorId(UUID authorId);
+}
 
 @RequiredArgsConstructor
 @Repository
@@ -43,5 +45,10 @@ class JpaBasedPostRepository implements PostRepository {
   @Override
   public void deleteById(UUID uuid) {
     jpaPostRepository.deleteById(uuid);
+  }
+
+  @Override
+  public List<Post> findAllByAuthorId(UUID id){
+    return jpaPostRepository.findAllByAuthorId(id);
   }
 }

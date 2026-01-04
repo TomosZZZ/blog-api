@@ -4,6 +4,7 @@ import com.tomcode.api.blog.post.dto.CreatePostDTO;
 import com.tomcode.api.blog.post.dto.PostResponse;
 import com.tomcode.api.blog.post.dto.UpdatePostDTO;
 import com.tomcode.api.blog.post.service.PostService;
+import com.tomcode.api.blog.user.entity.User;
 import jakarta.validation.Valid;
 
 import java.net.URI;
@@ -23,9 +24,18 @@ public class PostController {
 
   private final PostService postService;
 
+
+
   @GetMapping
   public ResponseEntity<List<PostResponse>> getAllPosts() {
     return ResponseEntity.ok(postService.getPosts());
+  }
+
+  @GetMapping("/panel")
+  @PreAuthorize("hasAnyRole('ADMIN','EDITOR')")
+  public ResponseEntity<List<PostResponse>> getPostsForPanel(Authentication auth) {
+    String email = auth.getName();
+    return ResponseEntity.ok(postService.getPostsForPanel(email));
   }
 
   @GetMapping("/{id}")
