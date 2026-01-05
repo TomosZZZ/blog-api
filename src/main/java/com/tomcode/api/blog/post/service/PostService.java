@@ -40,14 +40,31 @@ public class PostService {
     return postRepository.findAll().stream().map(this::toResponse).toList();
   }
 
-  public List<PostResponse> getPostsForPanel(String email){
+  public List<PostResponse> getPostsForPanel(String email, String scope){
 
-    User user = userService.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+    User user = userService.findByEmail(email);
 
-    if(user.hasRole(UserRole.ADMIN)){
-      return getPosts();
+    boolean admin = user.hasRole(UserRole.ADMIN);
+
+    if (!admin) {
+      return postRepository.findAllByAuthorId(user.getId())
+              .stream()
+              .map(this::toResponse)
+              .toList();
     }
-    return postRepository.findAllByAuthorId(user.getId()).stream().map(this::toResponse).toList();
+
+    if ("MINE".equals(scope)) {
+      System.out.println("W mine");
+      return postRepository.findAllByAuthorId(user.getId())
+              .stream()
+              .map(this::toResponse)
+              .toList();
+    }
+
+    return postRepository.findAll()
+            .stream()
+            .map(this::toResponse)
+            .toList();
   }
 
   @Transactional
@@ -58,21 +75,18 @@ public class PostService {
     Thumbnail thumbnail = new Thumbnail(createPostDTO.getThumbnail());
     UUID id = UUID.randomUUID();
 
-    Optional<User> author = userService.findByEmail(userEmail);
-    if(author.isEmpty()) {
-      throw new UserNotFoundException(userEmail);
-    }
+    User author = userService.findByEmail(userEmail);
 
-    Post post = new Post(id, title, thumbnail, content, author.get());
+    Post post = new Post(id, title, thumbnail, content, author);
     postRepository.save(post);
 
-    if (author.get().hasRole(UserRole.ADMIN)) {
-      post.setReviewer(author.get());
+    if (author.hasRole(UserRole.ADMIN)) {
+      post.setReviewer(author);
       if (publishNow) {
-        post.setStatus(Status.PUBLISHED);
+        post.setStatus(PostStatus.PUBLISHED);
         post.setPublishedAt(LocalDateTime.now());
       } else {
-        post.setStatus(Status.REVIEWED);
+        post.setStatus(PostStatus.APPROVED);
       }
     }
 
@@ -102,8 +116,7 @@ public class PostService {
     Post post = postRepository.findById(postId)
             .orElseThrow(() -> new PostNotFoundException(postId));
 
-    User user = userService.findByEmail(userEmail)
-            .orElseThrow(() -> new UserNotFoundException(userEmail));
+    User user = userService.findByEmail(userEmail);
 
     if (post.getAuthor() == null) {
       throw new IllegalStateException("Post has no author assigned");
@@ -126,6 +139,7 @@ public class PostService {
         post.getTitle().getTitle(),
         post.getSlug().getSlug(),
         post.getThumbnail().getThumbnail(),
+        post.getAuthor().getEmail(),
         post.getStatus(),
         post.getContent().getContent(),
         post.getCreatedAt().toString(),

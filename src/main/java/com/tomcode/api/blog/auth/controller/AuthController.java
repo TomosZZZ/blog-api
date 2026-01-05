@@ -49,7 +49,7 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(req.email(), req.password())
         );
 
-        User user = userService.findByEmail(req.email()).orElseThrow();
+        User user = userService.findByEmail(req.email());
 
         String accessToken = jwtService.generateAccessToken(user);
 
@@ -62,9 +62,7 @@ public class AuthController {
         ));
     }
 
-    // ------------------------
-    // REFRESH TOKEN
-    // ------------------------
+
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(
             @CookieValue(value = "refresh_token", required = false) String raw,
@@ -77,9 +75,8 @@ public class AuthController {
         RefreshToken rt = refreshService.findActive(raw)
                 .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
 
-        // ⬇️ TU dokładnie jest to miejsce
-        User user = userService.findByEmail(rt.getUserEmail())
-                .orElseThrow();
+
+        User user = userService.findByEmail(rt.getUserEmail());
 
         String accessToken = jwtService.generateAccessToken(user);
 
@@ -90,9 +87,7 @@ public class AuthController {
     }
 
 
-    // ------------------------
-    // ME (SPRAWDZENIE LOGINU)
-    // ------------------------
+
     @GetMapping("/me")
     public ResponseEntity<?> me(Authentication auth) {
         if (auth == null) return ResponseEntity.status(401).build();
@@ -102,9 +97,7 @@ public class AuthController {
         ));
     }
 
-    // ------------------------
-    // LOGOUT
-    // ------------------------
+
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse res,
                                     @CookieValue(value = "refresh_token", required = false) String raw) {
@@ -115,7 +108,6 @@ public class AuthController {
             });
         }
 
-        // Wygaszenie cookie
         Cookie cookie = new Cookie("refresh_token", "");
         cookie.setMaxAge(0);
         cookie.setHttpOnly(true);
@@ -126,20 +118,15 @@ public class AuthController {
     }
 
 
-    // ------------------------
-    // UTIL - ustawianie refresh cookie
-    // ------------------------
+
     private void addRefreshCookie(HttpServletResponse res, String rawToken) {
         Cookie cookie = new Cookie("refresh_token", rawToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setMaxAge(14 * 24 * 60 * 60); // 14 dni
-        // cookie.setSecure(true); // Włączasz gdy masz HTTPS
+        cookie.setMaxAge(14 * 24 * 60 * 60); // 14 days
         res.addCookie(cookie);
     }
 
-    // ------------------------
-    // DTO
-    // ------------------------
+
     public record LoginRequest(String email, String password) {}
 }

@@ -33,9 +33,9 @@ public class PostController {
 
   @GetMapping("/panel")
   @PreAuthorize("hasAnyRole('ADMIN','EDITOR')")
-  public ResponseEntity<List<PostResponse>> getPostsForPanel(Authentication auth) {
+  public ResponseEntity<List<PostResponse>> getPostsForPanel(Authentication auth,@RequestParam(required = false, defaultValue = "ALL") String scope) {
     String email = auth.getName();
-    return ResponseEntity.ok(postService.getPostsForPanel(email));
+    return ResponseEntity.ok(postService.getPostsForPanel(email,scope));
   }
 
   @GetMapping("/{id}")

@@ -29,8 +29,8 @@ public class UserService {
         return userRepo.findAll();
     }
 
-    public Optional<User> findByEmail(String email) {
-        return userRepo.findByEmail(email);
+    public User findByEmail(String email) {
+        return userRepo.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
     }
 
     public User getUserById(UUID id) {
