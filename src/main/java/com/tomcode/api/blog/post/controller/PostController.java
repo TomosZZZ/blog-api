@@ -1,8 +1,7 @@
 package com.tomcode.api.blog.post.controller;
 
-import com.tomcode.api.blog.post.dto.CreatePostDTO;
-import com.tomcode.api.blog.post.dto.PostResponse;
-import com.tomcode.api.blog.post.dto.UpdatePostDTO;
+import com.tomcode.api.blog.post.dto.*;
+import com.tomcode.api.blog.post.service.PostLifecycleService;
 import com.tomcode.api.blog.post.service.PostService;
 import com.tomcode.api.blog.user.entity.User;
 import jakarta.validation.Valid;
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
   private final PostService postService;
-
+  private final PostLifecycleService postLifecycleService;
 
 
   @GetMapping
@@ -33,8 +32,9 @@ public class PostController {
 
   @GetMapping("/panel")
   @PreAuthorize("hasAnyRole('ADMIN','EDITOR')")
-  public ResponseEntity<List<PostResponse>> getPostsForPanel(Authentication auth,@RequestParam(required = false, defaultValue = "ALL") String scope) {
+  public ResponseEntity<List<PostPanelResponse>> getPostsForPanel(Authentication auth,@RequestParam(required = false, defaultValue = "ALL") String scope) {
     String email = auth.getName();
+
     return ResponseEntity.ok(postService.getPostsForPanel(email,scope));
   }
 
@@ -58,7 +58,7 @@ public class PostController {
 
     return ResponseEntity
             .created(URI.create("/api/posts/" + id))
-            .body(Map.of("message", "Post created"));
+            .body(Map.of("id", id));
   }
 
   @PreAuthorize("hasRole('EDITOR') or hasRole('ADMIN')")
@@ -79,6 +79,21 @@ public class PostController {
           Authentication authentication) {
 
     postService.deletePost(id, authentication.getName());
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/{id}/status")
+  @PreAuthorize("hasAnyRole('ADMIN','EDITOR')")
+  public ResponseEntity<Void> changePostStatus(
+          @PathVariable UUID id,
+          @Valid @RequestBody ChangeStatusDTO dto,
+          Authentication authentication
+  ) {
+    postLifecycleService.changeStatus(
+            dto,
+            authentication.getName(),
+            id
+    );
     return ResponseEntity.noContent().build();
   }
 }
