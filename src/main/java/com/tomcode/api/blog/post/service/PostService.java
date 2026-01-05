@@ -36,6 +36,14 @@ public class PostService {
     return toResponse(postOptional.get());
   }
 
+  public Post getFullPostById(UUID id) {
+    Optional<Post> postOptional = postRepository.findById(id);
+    if (postOptional.isEmpty()) {
+      throw new PostNotFoundException(id);
+    }
+    return postOptional.get();
+  }
+
   public List<PostResponse> getPosts() {
     return postRepository.findAll().stream().map(this::toResponse).toList();
   }
