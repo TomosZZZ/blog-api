@@ -43,7 +43,8 @@ public class UserService {
 
     @Transactional
     public UUID createUser(CreateUserDTO userDTO) {
-        if(findByEmail(userDTO.getEmail()).isPresent()) {
+
+    if (userRepo.existsByEmail(userDTO.getEmail())) {
             throw new EmailAlreadyExistsException(userDTO.getEmail());
         }
         String hashedPassword = encoder.encode(userDTO.getPassword());

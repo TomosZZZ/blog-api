@@ -11,6 +11,7 @@ import java.util.UUID;
 
 public interface JpaUserRepository extends JpaRepository<User, UUID>{
     Optional<User> findByEmail(String email);
+    boolean existsByEmail(String email);
 }
 
 @RequiredArgsConstructor
@@ -47,6 +48,10 @@ class JpaBasedUserRepository implements UserRepository{
     @Override
     public boolean existsById(UUID id) {
         return jpaUserRepository.existsById(id);
+    }
+    @Override
+    public boolean existsByEmail(String email){
+        return jpaUserRepository.existsByEmail(email);
     }
 }
 
