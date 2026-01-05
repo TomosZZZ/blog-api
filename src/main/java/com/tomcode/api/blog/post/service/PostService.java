@@ -2,8 +2,8 @@ package com.tomcode.api.blog.post.service;
 
 import com.tomcode.api.blog.common.exception.ForbiddenException;
 import com.tomcode.api.blog.common.exception.PostNotFoundException;
-import com.tomcode.api.blog.common.exception.UserNotFoundException;
 import com.tomcode.api.blog.post.dto.CreatePostDTO;
+import com.tomcode.api.blog.post.dto.PostPanelResponse;
 import com.tomcode.api.blog.post.dto.PostResponse;
 import com.tomcode.api.blog.post.dto.UpdatePostDTO;
 import com.tomcode.api.blog.post.entity.*;
@@ -33,7 +33,7 @@ public class PostService {
     if (postOptional.isEmpty()) {
       throw new PostNotFoundException(id);
     }
-    return toResponse(postOptional.get());
+    return toPostResponse(postOptional.get());
   }
 
   public Post getFullPostById(UUID id) {
@@ -45,10 +45,10 @@ public class PostService {
   }
 
   public List<PostResponse> getPosts() {
-    return postRepository.findAll().stream().map(this::toResponse).toList();
+    return postRepository.findAll().stream().map(this::toPostResponse).toList();
   }
 
-  public List<PostResponse> getPostsForPanel(String email, String scope){
+  public List<PostPanelResponse> getPostsForPanel(String email, String scope){
 
     User user = userService.findByEmail(email);
 
@@ -57,7 +57,7 @@ public class PostService {
     if (!admin) {
       return postRepository.findAllByAuthorId(user.getId())
               .stream()
-              .map(this::toResponse)
+              .map(this::toPostPanelResponse)
               .toList();
     }
 
@@ -65,13 +65,13 @@ public class PostService {
       System.out.println("W mine");
       return postRepository.findAllByAuthorId(user.getId())
               .stream()
-              .map(this::toResponse)
+              .map(this::toPostPanelResponse)
               .toList();
     }
 
     return postRepository.findAll()
             .stream()
-            .map(this::toResponse)
+            .map(this::toPostPanelResponse)
             .toList();
   }
 
@@ -141,7 +141,7 @@ public class PostService {
     return post;
   }
 
-  private PostResponse toResponse(Post post) {
+  private PostResponse toPostResponse(Post post) {
     return new PostResponse(
         post.getId().toString(),
         post.getTitle().getTitle(),
@@ -152,5 +152,17 @@ public class PostService {
         post.getContent().getContent(),
         post.getCreatedAt().toString(),
         post.getUpdatedAt().toString());
+  }
+
+  private PostPanelResponse toPostPanelResponse(Post post) {
+    return new PostPanelResponse(
+            post.getId(),
+            post.getTitle().getTitle(),
+            post.getContent().getContent(),
+            post.getSlug().getSlug(),
+            post.getAuthor().getEmail(),
+            post.getStatus(),
+            post.getReviewComment(),
+            post.getCreatedAt().toString());
   }
 }
