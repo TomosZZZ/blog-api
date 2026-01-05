@@ -26,7 +26,7 @@ public class Post {
   @Setter
   @Enumerated(EnumType.STRING)
   @Column
-  private Status status;
+  private PostStatus status;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "author_id", nullable = false)
@@ -57,7 +57,7 @@ public class Post {
     this.title = title;
     this.thumbnail = thumbnail;
     this.content = content;
-    this.status = Status.DRAFT;
+    this.status = PostStatus.DRAFT;
     this.author = author;
     this.createdAt = LocalDateTime.now();
     this.updatedAt = LocalDateTime.now();
