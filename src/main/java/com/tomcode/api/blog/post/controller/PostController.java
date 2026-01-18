@@ -3,7 +3,6 @@ package com.tomcode.api.blog.post.controller;
 import com.tomcode.api.blog.post.dto.*;
 import com.tomcode.api.blog.post.service.PostLifecycleService;
 import com.tomcode.api.blog.post.service.PostService;
-import com.tomcode.api.blog.user.entity.User;
 import jakarta.validation.Valid;
 
 import java.net.URI;
