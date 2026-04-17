@@ -62,7 +62,6 @@ public class PostService {
     }
 
     if ("MINE".equals(scope)) {
-      System.out.println("W mine");
       return postRepository.findAllByAuthorId(user.getId())
               .stream()
               .map(this::toPostPanelResponse)
