@@ -2,9 +2,9 @@ spring:
   application:
     name: Blog
   datasource:
-    username: user
-    password: password
-    url: jdbc:postgresql://localhost:5432/blog
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
   jpa:
     show-sql: true
     properties:
@@ -15,6 +15,6 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 app:
   jwt:
-    secret: 394582c0def196145497dfa4d7a0ffd496fd2b3da912f5ad624090db3897872558fc3b14747326ca3a88c486b61acf442f3f32a81b7ec4c268445243896879a06bacc4a8ef889beed5072b41f7b701a8abe0c241f25b7f6bcb898b49c3f2316d905b3930d6f91a67a1e6e3b279fdcc6654116e25a271c5671d1fc6c22620a3c52de7641330ae75ebccf40e5ade0b1bfee411515454557da4f910203c2a5f98ae8ff45dd76797b5a74e529326528a67e499fd6d17e852990039366f5314821c3aa33d3a4ae8ab75ad92b2bc78e193219decfd18cfd29dc3339554e493216f3915eb8929e72b065501048ed347d3945c48bae328c230fd99549715b64be7929f9e
-    accessTtlMinutes: 15
-    refreshTtlDays: 14
+    secret: ${JWT_SECRET}
+    accessTtlMinutes: ${JWT_ACCESS_TTL_MINUTES:15}
+    refreshTtlDays: ${JWT_REFRESH_TTL_DAYS:14}
