@@ -97,14 +97,14 @@ public class GlobalExceptionHandler {
   }
 
   /* =========================
-     401 – UNAUTHORIZED
+     400 – BAD REQUEST (app-level)
      ========================= */
   @ExceptionHandler(BadRequestException.class)
-  public ResponseEntity<Map<String, Object>> handleUnauthorized(
+  public ResponseEntity<Map<String, Object>> handleBadRequest(
           BadRequestException ex) {
 
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-            "code", "UNAUTHORIZED",
+    return ResponseEntity.badRequest().body(Map.of(
+            "code", "BAD_REQUEST",
             "message", ex.getMessage()
     ));
   }
