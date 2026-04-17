@@ -103,9 +103,7 @@ public class AuthController {
                                     @CookieValue(value = "refresh_token", required = false) String raw) {
 
         if (raw != null) {
-            refreshService.findActive(raw).ifPresent(rt -> {
-                rt.setRevokedAt(java.time.Instant.now());
-            });
+            refreshService.findActive(raw).ifPresent(refreshService::revoke);
         }
 
         Cookie cookie = new Cookie("refresh_token", "");

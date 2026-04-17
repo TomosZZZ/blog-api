@@ -58,6 +58,11 @@ public class RefreshTokenService {
     }
 
 
+    public void revoke(RefreshToken rt) {
+        rt.setRevokedAt(Instant.now());
+        repo.save(rt);
+    }
+
     public String rotate(RefreshToken old) {
         old.setRevokedAt(Instant.now());
 
