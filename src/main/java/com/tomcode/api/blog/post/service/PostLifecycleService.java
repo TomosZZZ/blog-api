@@ -47,6 +47,14 @@ public class PostLifecycleService {
         }
 
         post.setStatus(to);
+
+        if (from == PostStatus.IN_REVIEW) {
+            post.setReviewer(user);
+        }
+
+        if (to == PostStatus.PUBLISHED) {
+            post.setPublishedAt(java.time.LocalDateTime.now());
+        }
     }
 
 
