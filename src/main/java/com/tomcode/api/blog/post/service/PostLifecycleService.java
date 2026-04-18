@@ -42,7 +42,7 @@ public class PostLifecycleService {
                 throw new ForbiddenException("Review comment is required");
             }
             post.setReviewComment(dto.comment());
-        }else{
+        } else if (from == PostStatus.IN_REVIEW && to == PostStatus.APPROVED) {
             post.setReviewComment(null);
         }
 
