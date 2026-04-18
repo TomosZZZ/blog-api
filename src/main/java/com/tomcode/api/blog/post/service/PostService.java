@@ -162,6 +162,7 @@ public class PostService {
             post.getAuthor().getEmail(),
             post.getStatus(),
             post.getReviewComment(),
+            post.getReviewer() != null ? post.getReviewer().getEmail() : null,
             post.getCreatedAt().toString());
   }
 }

@@ -12,6 +12,7 @@ public record PostPanelResponse(
         String authorEmail,
         PostStatus status,
         String reviewComment,
+        String reviewerEmail,
         String createdAt
 ) {
 }
