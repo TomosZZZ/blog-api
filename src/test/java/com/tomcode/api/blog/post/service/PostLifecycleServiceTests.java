@@ -21,8 +21,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class PostLifecycleServiceTests {
     private  PostService postService;
@@ -217,6 +217,67 @@ public class PostLifecycleServiceTests {
         Post post = createPostWithGivenStatus(author.getEmail(), PostStatus.DRAFT);
         ChangeStatusDTO dto = new ChangeStatusDTO(PostStatus.DRAFT, null);
         assertThrows(UserNotFoundException.class, ()->postLifecycleService.changeStatus(dto,"fakeEmail@mail.com", post.getId()));
+    }
+
+    @Test
+    public void shouldSetReviewer_whenAdminApprovesFromInReview() {
+        User admin = createAdmin("admin@mail.com");
+        User author = createUser("user@mail.com");
+        Post post = createPostWithGivenStatus(author.getEmail(), PostStatus.IN_REVIEW);
+        ChangeStatusDTO dto = new ChangeStatusDTO(PostStatus.APPROVED, null);
+
+        postLifecycleService.changeStatus(dto, admin.getEmail(), post.getId());
+
+        assertEquals(admin.getId(), post.getReviewer().getId());
+    }
+
+    @Test
+    public void shouldSetReviewer_whenAdminReqChangesFromInReview() {
+        User admin = createAdmin("admin@mail.com");
+        User author = createUser("user@mail.com");
+        Post post = createPostWithGivenStatus(author.getEmail(), PostStatus.IN_REVIEW);
+        ChangeStatusDTO dto = new ChangeStatusDTO(PostStatus.CHANGES_REQ, "fix this");
+
+        postLifecycleService.changeStatus(dto, admin.getEmail(), post.getId());
+
+        assertEquals(admin.getId(), post.getReviewer().getId());
+    }
+
+    @Test
+    public void shouldSetPublishedAt_whenPublished() {
+        User author = createUser("user@mail.com");
+        Post post = createPostWithGivenStatus(author.getEmail(), PostStatus.APPROVED);
+        ChangeStatusDTO dto = new ChangeStatusDTO(PostStatus.PUBLISHED, null);
+
+        postLifecycleService.changeStatus(dto, author.getEmail(), post.getId());
+
+        assertNotNull(post.getPublishedAt());
+    }
+
+    @Test
+    public void shouldClearReviewComment_whenAdminApproves() {
+        User admin = createAdmin("admin@mail.com");
+        User author = createUser("user@mail.com");
+        Post post = createPostWithGivenStatus(author.getEmail(), PostStatus.IN_REVIEW);
+        post.setReviewComment("old comment");
+        ChangeStatusDTO dto = new ChangeStatusDTO(PostStatus.APPROVED, null);
+
+        postLifecycleService.changeStatus(dto, admin.getEmail(), post.getId());
+
+        assertNull(post.getReviewComment());
+    }
+
+    @Test
+    public void shouldPreserveReviewComment_whenAuthorMovesDraftFromChangesReq() {
+        User admin = createAdmin("admin@mail.com");
+        User author = createUser("user@mail.com");
+        Post post = createPostWithGivenStatus(author.getEmail(), PostStatus.CHANGES_REQ);
+        post.setReviewComment("fix the intro");
+        ChangeStatusDTO dto = new ChangeStatusDTO(PostStatus.DRAFT, null);
+
+        postLifecycleService.changeStatus(dto, author.getEmail(), post.getId());
+
+        assertEquals("fix the intro", post.getReviewComment());
     }
 }
 
