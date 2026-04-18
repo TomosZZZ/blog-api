@@ -10,5 +10,6 @@ public record PostResponse(
     String authorEmail,
     PostStatus status,
     String content,
+    String reviewComment,
     String createdAt,
     String updatedAt) {}

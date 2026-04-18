@@ -149,6 +149,7 @@ public class PostService {
         post.getAuthor().getEmail(),
         post.getStatus(),
         post.getContent().getContent(),
+        post.getReviewComment(),
         post.getCreatedAt().toString(),
         post.getUpdatedAt().toString());
   }
