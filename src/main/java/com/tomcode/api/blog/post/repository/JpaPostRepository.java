@@ -1,6 +1,7 @@
 package com.tomcode.api.blog.post.repository;
 
 import com.tomcode.api.blog.post.entity.Post;
+import com.tomcode.api.blog.post.entity.PostStatus;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 public interface JpaPostRepository extends JpaRepository<Post, UUID> {
   List<Post> findAllByAuthorId(UUID authorId);
+  List<Post> findAllByStatus(PostStatus status);
 }
 
 @RequiredArgsConstructor
@@ -50,5 +52,10 @@ class JpaBasedPostRepository implements PostRepository {
   @Override
   public List<Post> findAllByAuthorId(UUID id){
     return jpaPostRepository.findAllByAuthorId(id);
+  }
+
+  @Override
+  public List<Post> findAllByStatus(PostStatus status) {
+    return jpaPostRepository.findAllByStatus(status);
   }
 }

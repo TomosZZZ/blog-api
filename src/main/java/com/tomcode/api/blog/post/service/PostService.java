@@ -45,7 +45,7 @@ public class PostService {
   }
 
   public List<PostResponse> getPosts() {
-    return postRepository.findAll().stream().map(this::toPostResponse).toList();
+    return postRepository.findAllByStatus(PostStatus.PUBLISHED).stream().map(this::toPostResponse).toList();
   }
 
   public List<PostPanelResponse> getPostsForPanel(String email, String scope){

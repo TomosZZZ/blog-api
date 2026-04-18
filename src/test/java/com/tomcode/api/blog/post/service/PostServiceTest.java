@@ -214,4 +214,16 @@ class PostServiceTest {
             () -> postService.createPost(dto, user.getEmail(), false));
   }
 
+  @Test
+  void getPosts_shouldReturnOnlyPublishedPosts() {
+    User admin = createAdmin("admin@mail.com");
+    createPost("Draft Post", "Content", "aGVsbG8=", admin.getEmail());
+    postService.createPost(new CreatePostDTO("Published Post", "Content", "aGVsbG8="), admin.getEmail(), true);
+
+    var posts = postService.getPosts();
+
+    assertEquals(1, posts.size());
+    assertEquals("Published Post", posts.get(0).title());
+  }
+
 }

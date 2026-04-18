@@ -1,6 +1,7 @@
 package com.tomcode.api.blog.post.repository;
 
 import com.tomcode.api.blog.post.entity.Post;
+import com.tomcode.api.blog.post.entity.PostStatus;
 import java.util.*;
 
 public class InMemoryPostRepository implements PostRepository {
@@ -40,5 +41,10 @@ public class InMemoryPostRepository implements PostRepository {
   @Override
   public List<Post> findAllByAuthorId(UUID authorId) {
     return posts.values().stream().filter(p -> p.getAuthor().getId().equals(authorId)).toList();
+  }
+
+  @Override
+  public List<Post> findAllByStatus(PostStatus status) {
+    return posts.values().stream().filter(p -> p.getStatus() == status).toList();
   }
 }
