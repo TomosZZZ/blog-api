@@ -29,4 +29,8 @@ public class ThumbnailTest {
         String invalidBase64 = "not@base64!!";
         assertThrows(IllegalArgumentException.class, () -> new Thumbnail(invalidBase64));
     }
+    @Test
+    void shouldThrowExceptionWhenIsNull(){
+    assertThrows(IllegalArgumentException.class, () -> new Thumbnail(null));
+  }
 }

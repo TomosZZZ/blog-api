@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JWTParser {
 
-  @Value("${jwt.secret}")
+  @Value("${app.jwt.secret}")
   private String secretKey;
 
   public Claims getClaims(String authHeader) {

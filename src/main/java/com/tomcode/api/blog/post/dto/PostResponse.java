@@ -1,10 +1,15 @@
 package com.tomcode.api.blog.post.dto;
 
+import com.tomcode.api.blog.post.entity.PostStatus;
+
 public record PostResponse(
     String id,
     String title,
     String slug,
     String thumbnail,
+    String authorEmail,
+    PostStatus status,
     String content,
+    String reviewComment,
     String createdAt,
     String updatedAt) {}

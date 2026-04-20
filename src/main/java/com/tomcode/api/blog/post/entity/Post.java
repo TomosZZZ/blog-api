@@ -12,7 +12,7 @@ import lombok.Setter;
 @Table(name = "post")
 public class Post {
   @Id
-  @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+  @Column( updatable = false, nullable = false)
   private UUID id;
 
   @Embedded private Title title;
@@ -26,10 +26,10 @@ public class Post {
   @Setter
   @Enumerated(EnumType.STRING)
   @Column
-  private Status status;
+  private PostStatus status;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "author_id")
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "author_id", nullable = false)
   private User author;
 
   @Setter
@@ -57,7 +57,7 @@ public class Post {
     this.title = title;
     this.thumbnail = thumbnail;
     this.content = content;
-    this.status = Status.DRAFT;
+    this.status = PostStatus.DRAFT;
     this.author = author;
     this.createdAt = LocalDateTime.now();
     this.updatedAt = LocalDateTime.now();

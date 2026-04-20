@@ -48,7 +48,7 @@ public class TitleTest {
 
   @Test
   public void shouldThrowException_whenTitleIsNull() {
-    assertThrows(NullPointerException.class, () -> new Title(null));
+    assertThrows(IllegalArgumentException.class, () -> new Title(null));
   }
 
   @Test

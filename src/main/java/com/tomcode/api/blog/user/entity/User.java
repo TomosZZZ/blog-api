@@ -1,50 +1,61 @@
 package com.tomcode.api.blog.user.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.UUID;
 
-@Data
 @Entity
-@Table(name = "User")
+@Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-  @Id
-  @Column(columnDefinition = "varchar(191)")
-  private String id;
+    @Column(nullable = false,unique = true)
+    private String email;
 
-  private String name;
+    @Column(nullable = false)
+    private String password;
 
-  @Column(unique = true)
-  private String username;
+    @Column(nullable = false)
+    private String username;
 
-  @Column(unique = true)
-  private String email;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
-  @Column(name = "email_verified")
-  private LocalDateTime emailVerified;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-  @Enumerated(EnumType.STRING)
-  private UserRole role = UserRole.USER;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
-  private String password;
-  private String image;
+    public User(String email, String password, String username) {
+        this.email = email;
+        this.password = password;
+        this.username = username;
+        this.role = UserRole.USER;
+    }
 
-  @OneToMany(mappedBy = "user")
-  private List<Account> accounts;
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
 
-  @OneToMany(mappedBy = "user")
-  private List<Session> sessions;
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
-  @Column(name = "created_at")
-  private LocalDateTime createdAt;
-
-  @Column(name = "updated_at")
-  private LocalDateTime updatedAt;
-
-  public boolean hasRole(UserRole role) {
-    return this.role == role;
-  }
+    public boolean hasRole(UserRole role) {
+        return this.role == role;
+    }
 }
